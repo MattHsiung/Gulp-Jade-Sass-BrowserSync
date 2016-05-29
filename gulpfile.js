@@ -6,11 +6,14 @@ const gulp = require('gulp'),
 	sass = require('gulp-sass'),
 	browserSync = require('browser-sync');
 
+const multipage = false;
+
 const paths = {
 	root: '',
 	sass: 'build/sass',
 	jade: 'build/jade',
-	css: 'css'
+	css: 'css',
+	js: 'js'
 };
 
 gulp.task('browser-sync', ['sass', 'jade'], () => {
@@ -22,7 +25,9 @@ gulp.task('browser-sync', ['sass', 'jade'], () => {
 });
 
 gulp.task('jade', () => {
-	return gulp.src(paths.jade + '/index.jade')
+	var glob = (multipage) ? '/*.jade' : '/index.jade';
+
+	return gulp.src(paths.jade + glob)
 		.pipe(jade())
 		.pipe(gulp.dest(paths.root));
 });
@@ -43,9 +48,14 @@ gulp.task('jade-rebuild', ['jade'], ()=> {
 	browserSync.reload();
 });
 
+gulp.task('browser-reload', ()=> {
+	browserSync.reload();
+});
+
 gulp.task('watch', () => {
 	gulp.watch(paths.sass + '/*.sass', ['sass']);
 	gulp.watch(paths.jade + '/*.jade', ['jade-rebuild']);
+	gulp.watch(paths.js + '/*.js', ['browser-reload']);
 });
 
 gulp.task('default', ['browser-sync', 'watch']);
